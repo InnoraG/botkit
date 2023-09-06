@@ -684,7 +684,7 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
             // This prompt must be a valid dialog defined somewhere in your code!
             if (line.collect && line.action !== 'beginDialog') {
                 try {
-                    
+
                     const madeoutgoing = await this.makeOutgoing(dc, line, step.values);
 
                     if (madeoutgoing.channelData.quick_replies && step.state.options.channel && (step.state.options.channel.indexOf('whatsapp') !== -1)) {
@@ -694,24 +694,24 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
                                     return {
                                         value: x.payload,
                                         action: {
-                                                type: 'postback',
-                                                title: x.title,
-                                                //value: x.payload
-                                            },
+                                            type: 'postback',
+                                            title: x.title,
+                                            //value: x.payload
+                                        },
                                         //synonyms: [x.title]
                                     }
                                     break;
-                                    case 'user_email':
-                                        return {
-                                            value: x.content_type,
-                                            action: {
-                                                    type: 'postback',
-                                                    title: x.title,
-                                                    //value: x.content_type
-                                                },
-                                            synonyms: ['user_email']
-                                        }
-                                        break;
+                                case 'user_email':
+                                    return {
+                                        value: x.content_type,
+                                        action: {
+                                            type: 'postback',
+                                            title: x.title,
+                                            //value: x.content_type
+                                        },
+                                        synonyms: ['user_email']
+                                    }
+                                    break;
                                 default:
                                     break;
                             }
@@ -738,7 +738,96 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
             } else {
                 // if there is text, attachments, or any channel data fields at all...
                 if (line.type || line.text || line.attachments || line.attachment || line.blocks || (line.channelData && Object.keys(line.channelData).length)) {
-                    await dc.context.sendActivity(await this.makeOutgoing(dc, line, step.values));
+
+                    const madeoutgoing = await this.makeOutgoing(dc, line, step.values);
+
+                    if ((step.state.options.channel.indexOf('whatsapp') !== -1) && madeoutgoing.attachments && madeoutgoing.attachmentLayout && madeoutgoing.attachmentLayout == 'carousel') {
+                        try {
+                            let lastbutton = 0;
+                            const madeoutgoingsingle = JSON.parse(JSON.stringify(madeoutgoing))
+                            for (let attid = 0; attid < madeoutgoing.attachments.length; attid++) {
+                                madeoutgoingsingle.attachments = madeoutgoing.attachments.slice(attid, attid + 1);
+                                madeoutgoingsingle.attachments[0].name = madeoutgoingsingle.attachments[0].content.buttons.length + lastbutton;
+                                madeoutgoingsingle.channelData.attachment.payload.elements = madeoutgoing.channelData.attachment.payload.elements.slice(attid, attid + 1);
+                                madeoutgoingsingle.channelData.attachments = madeoutgoing.channelData.attachments.slice(attid, attid + 1);
+                                madeoutgoingsingle.channelData.attachments[0].name = madeoutgoingsingle.channelData.attachments[0].content.buttons.length + lastbutton;
+                                lastbutton = madeoutgoingsingle.attachments[0].name;
+                                await dc.context.sendActivity(madeoutgoingsingle);
+                            }
+                            /*madeoutgoing.attachments.forEach(attachment => {
+                                let message_body = `*${attachment.content.title}*\n_${attachment.content.subtitle}_\n`;
+                                attachment.content.buttons.forEach(button => {
+                                    message_body += `\n${butc}.${button.title}`;
+                                    butc++;
+                                });
+                                yield dc.context.sendActivity(madeoutgoing);
+                            });*/
+                            const choiceArray = madeoutgoing.attachments.map(hc => {
+                                switch (hc.contentType) {
+                                    case 'application/vnd.microsoft.card.hero':
+                                        return hc.content.buttons.map(b => {
+                                            return {
+                                                value: b.value,
+                                                action: {
+                                                    type: 'postback',
+                                                    title: b.title,
+                                                    //value: x.payload
+                                                },
+                                                //synonyms: [x.title]
+                                            };
+                                        })
+
+                                        break;
+                                    case 'user_email':
+                                        return {
+                                            value: hc.content_type,
+                                            action: {
+                                                type: 'postback',
+                                                title: hc.title,
+                                                //value: x.content_type
+                                            },
+                                            synonyms: ['user_email']
+                                        };
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            });
+                            const choiceArrayFlat = choiceArray.flat();
+                            //const choicePromptOptions = ChoiceFactory.forChannel(dc.context, choiceArray, madeoutgoing.text);
+                            const promptOptions = {
+                                prompt: 'Merci de faire votre choix :',//madeoutgoing.text,
+                                choices: ChoiceFactory.toChoices(choiceArrayFlat),
+                                style: ListStyle.list
+                                // You can also include a retry prompt if you like,
+                                // but there's no need to include the choices property in a text prompt
+                            };
+                            return await dc.prompt(this._promptchoice, promptOptions);
+                        } catch (err) {
+                            console.error(err);
+                            await dc.context.sendActivity(`Failed to start prompt ${this._prompt}`);
+                            return await step.next();
+                        }
+                    } else if (madeoutgoing.attachments && madeoutgoing.attachmentLayout && madeoutgoing.attachmentLayout == 'carousel' && madeoutgoing.attachments.length >= 4) {
+                        // Break long carousel to multiline
+                        const row = Math.ceil(Math.sqrt(madeoutgoing.attachments.length))
+                        const madeoutgoingCopy = Object.assign({}, madeoutgoing);
+                        for (let turn = 0; turn < row && row <= 10; turn++) {
+                            if (turn == row - 1) {
+                                madeoutgoingCopy.attachments = madeoutgoing.attachments.slice(turn * row);
+                                if (madeoutgoingCopy.attachments.length) {
+                                    await dc.context.sendActivity(madeoutgoingCopy);
+                                }
+                            } else {
+                                madeoutgoingCopy.attachments = madeoutgoing.attachments.slice(turn * row, turn * row + row);
+                                await dc.context.sendActivity(madeoutgoingCopy);
+                            }
+                        }
+                    } else {
+                        // sendActivity as usual
+                        await dc.context.sendActivity(madeoutgoing);
+                    }
+
                 } else if (!line.action) {
                     console.error('Dialog contains invalid message', line);
                 }
