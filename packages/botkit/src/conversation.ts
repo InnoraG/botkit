@@ -597,6 +597,11 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
      * @param step The current step object
      */
     private async onStep(dc, step): Promise<any> {
+        // InnoraG : Let's merge named regex into vars
+        if (step.values.message && step.values.message.matches && step.values.message.matches.groups) { 
+            Object.assign(step.values,step.values.message.matches.groups);
+        }
+
         // Let's interpret the current line of the script.
         const thread = this.script[step.thread];
         step.result = (typeof (step.result) === 'object' && step.result !== null) ? step.result.value : step.result;

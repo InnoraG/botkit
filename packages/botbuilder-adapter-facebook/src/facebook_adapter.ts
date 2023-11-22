@@ -252,7 +252,7 @@ export class FacebookAdapter extends BotAdapter {
 
             // make sure the quick reply has a type
             if (activity.channelData.quick_replies) {
-                message.message.quick_replies = activity.channelData.quick_replies.map(function (item) {
+                message.message.quick_replies = activity.channelData.quick_replies.map(function(item) {
                     const quick_reply = { ...item };
                     if (!item.content_type) quick_reply.content_type = 'text';
                     return quick_reply;
@@ -260,7 +260,7 @@ export class FacebookAdapter extends BotAdapter {
             }
         }
 
-        debug('OUT TO FACEBOOK > ', JSON.stringify(message, null, 4));
+        debug('OUT TO FACEBOOK > ', message);
 
         return message;
     }
@@ -283,20 +283,7 @@ export class FacebookAdapter extends BotAdapter {
                     if (res) {
                         responses.push({ id: res.message_id });
                     }
-                    debug('RESPONSE FROM FACEBOOK > ', JSON.stringify(res, null, 4));
-                } catch (err) {
-                    console.error('Error sending activity to Facebook:', err);
-                }
-            } else if (activity.type === ActivityTypes.Typing) {
-                activity.channelData = { sender_action: "typing_on" };
-                const message = this.activityToFacebook(activity);
-                try {
-                    const api = await this.getAPI(context.activity);
-                    const res = await api.callAPI('/me/messages', 'POST', message);
-                    if (res) {
-                        responses.push({ id: res.message_id });
-                    }
-                    debug('RESPONSE FROM FACEBOOK > ', JSON.stringify(res, null, 4));
+                    debug('RESPONSE FROM FACEBOOK > ', res);
                 } catch (err) {
                     console.error('Error sending activity to Facebook:', err);
                 }
@@ -323,7 +310,7 @@ export class FacebookAdapter extends BotAdapter {
      * @ignore
      */
     // eslint-disable-next-line
-    public async deleteActivity(context: TurnContext, reference: Partial<ConversationReference>): Promise<void> {
+     public async deleteActivity(context: TurnContext, reference: Partial<ConversationReference>): Promise<void> {
         debug('Facebook adapter does not support deleteActivity.');
     }
 
@@ -351,7 +338,7 @@ export class FacebookAdapter extends BotAdapter {
      * @param logic A bot logic function in the form `async(context) => { ... }`
      */
     public async processActivity(req, res, logic: (context: TurnContext) => Promise<void>): Promise<void> {
-        debug('IN FROM FACEBOOK >', JSON.stringify(req.body, null, 4));
+        debug('IN FROM FACEBOOK >', req.body);
         if (await this.verifySignature(req, res) === true) {
             const event = req.body;
             if (event.entry) {
@@ -432,11 +419,6 @@ export class FacebookAdapter extends BotAdapter {
             for (const key in message.message) {
                 activity.channelData[key] = message.message[key];
             }
-
-            if (activity.channelData.message.quick_reply && activity.channelData.message.quick_reply.payload.length > 0) {
-                activity.text = activity.channelData.message.quick_reply.payload;
-            }
-
         } else if (message.postback) {
             activity.type = ActivityTypes.Message;
             activity.text = message.postback.payload;

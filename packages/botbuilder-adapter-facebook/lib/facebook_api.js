@@ -17,7 +17,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FacebookAPI = void 0;
-const request = require("request");
+const cross_fetch_1 = require("cross-fetch");
 const crypto = require("crypto");
 /**
  * A simple API client for the Facebook API.  Automatically signs requests with the access token and app secret proof.
@@ -64,24 +64,24 @@ class FacebookAPI {
             else {
                 body = payload;
             }
-            return new Promise((resolve, reject) => {
-                request({
-                    method: method.toUpperCase(),
-                    json: true,
-                    body,
-                    uri: `https://${this.api_host}/${this.api_version}${path}${queryString}access_token=${this.token}&appsecret_proof=${proof}`
-                }, (err, res, body) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else if (body.error) {
-                        reject(body.error.message);
-                    }
-                    else {
-                        resolve(body);
-                    }
-                });
+            const fetchResponse = yield (0, cross_fetch_1.default)(`https://${this.api_host}/${this.api_version}${path}${queryString}access_token=${this.token}&appsecret_proof=${proof}`, {
+                method: method.toUpperCase(),
+                body: JSON.stringify(body)
             });
+            const responseData = yield fetchResponse.text();
+            if (!fetchResponse.ok) {
+                throw new Error(`Request failed with status ${fetchResponse.status}: ${responseData}`);
+            }
+            try {
+                const responseJson = JSON.parse(responseData);
+                if (responseJson.error) {
+                    throw new Error(responseJson.error.message);
+                }
+                return responseJson;
+            }
+            catch (e) {
+                return responseData;
+            }
         });
     }
     /**

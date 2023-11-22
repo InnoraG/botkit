@@ -16,16 +16,16 @@ import { TeamsInfo, MiddlewareSet, TurnContext } from 'botbuilder';
  */
 export declare class TeamsBotWorker extends BotWorker {
     /**
-     * Grants access to the TeamsInfo helper class
-     * See: https://docs.microsoft.com/en-us/javascript/api/botbuilder/teamsinfo?view=botbuilder-ts-latest
-     */
+   * Grants access to the TeamsInfo helper class
+   * See: https://docs.microsoft.com/en-us/javascript/api/botbuilder/teamsinfo?view=botbuilder-ts-latest
+   */
     teams: TeamsInfo;
     /**
-     * Reply to a Teams task module task/fetch or task/submit with a task module response.
-     * See https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/task-modules/task-modules-bots
-     * @param message
-     * @param taskInfo an object in the form {type, value}
-     */
+   * Reply to a Teams task module task/fetch or task/submit with a task module response.
+   * See https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/task-modules/task-modules-bots
+   * @param message
+   * @param taskInfo an object in the form {type, value}
+   */
     replyWithTaskInfo(message: BotkitMessage, taskInfo: any): Promise<any>;
 }
 /**

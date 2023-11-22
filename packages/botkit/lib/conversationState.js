@@ -32,7 +32,7 @@ class BotkitConversationState extends botbuilder_1.ConversationState {
         if (!conversationId) {
             throw new Error('missing activity.conversation.id');
         }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore namespace is technically private
         return `${channelId}/conversations/${conversationId}/${this.namespace}`;
     }

@@ -248,7 +248,7 @@ class FacebookAdapter extends botbuilder_1.BotAdapter {
                 });
             }
         }
-        debug('OUT TO FACEBOOK > ', JSON.stringify(message, null, 4));
+        debug('OUT TO FACEBOOK > ', message);
         return message;
     }
     /**
@@ -270,22 +270,7 @@ class FacebookAdapter extends botbuilder_1.BotAdapter {
                         if (res) {
                             responses.push({ id: res.message_id });
                         }
-                        debug('RESPONSE FROM FACEBOOK > ', JSON.stringify(res, null, 4));
-                    }
-                    catch (err) {
-                        console.error('Error sending activity to Facebook:', err);
-                    }
-                }
-                else if (activity.type === botbuilder_1.ActivityTypes.Typing) {
-                    activity.channelData = { sender_action: "typing_on" };
-                    const message = this.activityToFacebook(activity);
-                    try {
-                        const api = yield this.getAPI(context.activity);
-                        const res = yield api.callAPI('/me/messages', 'POST', message);
-                        if (res) {
-                            responses.push({ id: res.message_id });
-                        }
-                        debug('RESPONSE FROM FACEBOOK > ', JSON.stringify(res, null, 4));
+                        debug('RESPONSE FROM FACEBOOK > ', res);
                     }
                     catch (err) {
                         console.error('Error sending activity to Facebook:', err);
@@ -340,7 +325,7 @@ class FacebookAdapter extends botbuilder_1.BotAdapter {
      */
     processActivity(req, res, logic) {
         return __awaiter(this, void 0, void 0, function* () {
-            debug('IN FROM FACEBOOK >', JSON.stringify(req.body, null, 4));
+            debug('IN FROM FACEBOOK >', req.body);
             if ((yield this.verifySignature(req, res)) === true) {
                 const event = req.body;
                 if (event.entry) {
@@ -413,9 +398,6 @@ class FacebookAdapter extends botbuilder_1.BotAdapter {
                 // copy fields like attachments, sticker, quick_reply, nlp, etc.
                 for (const key in message.message) {
                     activity.channelData[key] = message.message[key];
-                }
-                if (activity.channelData.message.quick_reply && activity.channelData.message.quick_reply.payload.length > 0) {
-                    activity.text = activity.channelData.message.quick_reply.payload;
                 }
             }
             else if (message.postback) {

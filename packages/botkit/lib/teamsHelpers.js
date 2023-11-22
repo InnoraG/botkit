@@ -22,20 +22,20 @@ class TeamsBotWorker extends botworker_1.BotWorker {
     constructor() {
         super(...arguments);
         /**
-         * Grants access to the TeamsInfo helper class
-         * See: https://docs.microsoft.com/en-us/javascript/api/botbuilder/teamsinfo?view=botbuilder-ts-latest
-         */
+       * Grants access to the TeamsInfo helper class
+       * See: https://docs.microsoft.com/en-us/javascript/api/botbuilder/teamsinfo?view=botbuilder-ts-latest
+       */
         this.teams = botbuilder_1.TeamsInfo;
     }
     /**
-     * Reply to a Teams task module task/fetch or task/submit with a task module response.
-     * See https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/task-modules/task-modules-bots
-     * @param message
-     * @param taskInfo an object in the form {type, value}
-     */
+   * Reply to a Teams task module task/fetch or task/submit with a task module response.
+   * See https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/task-modules/task-modules-bots
+   * @param message
+   * @param taskInfo an object in the form {type, value}
+   */
     replyWithTaskInfo(message, taskInfo) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!taskInfo || taskInfo === {}) {
+            if (!taskInfo || Object.keys(taskInfo).length === 0) {
                 // send a null response back
                 taskInfo = {
                     type: 'message',

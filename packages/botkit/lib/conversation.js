@@ -473,6 +473,10 @@ class BotkitConversation extends botbuilder_dialogs_1.Dialog {
      */
     onStep(dc, step) {
         return __awaiter(this, void 0, void 0, function* () {
+            // InnoraG : Let's merge named regex into vars
+            if (step.values.message && step.values.message.matches && step.values.message.matches.groups) {
+                Object.assign(step.values, step.values.message.matches.groups);
+            }
             // Let's interpret the current line of the script.
             const thread = this.script[step.thread];
             step.result = (typeof (step.result) === 'object' && step.result !== null) ? step.result.value : step.result;
