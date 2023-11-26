@@ -662,7 +662,7 @@ class BotkitConversation extends botbuilder_dialogs_1.Dialog {
                                 const choiceArrayFlat = choiceArray.flat();
                                 //const choicePromptOptions = ChoiceFactory.forChannel(dc.context, choiceArray, madeoutgoing.text);
                                 const promptOptions = {
-                                    prompt: 'Merci de faire votre choix :',
+                                    prompt: 'Merci de faire votre choix :', //madeoutgoing.text,
                                     choices: botbuilder_dialogs_1.ChoiceFactory.toChoices(choiceArrayFlat),
                                     style: botbuilder_dialogs_1.ListStyle.list
                                     // You can also include a retry prompt if you like,
