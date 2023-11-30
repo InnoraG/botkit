@@ -699,7 +699,7 @@ class BotkitConversation extends botbuilder_dialogs_1.Dialog {
                             && Array.isArray(madeoutgoing.channelData.attachments)
                             && madeoutgoing.attachments[0].contentType
                             && madeoutgoing.attachments[0].contentType === 'image/jpg') {
-                            for (let index = 0; index < madeoutgoing.attachments.length(); index++) {
+                            for (let index = 0; index < madeoutgoing.attachments.length; index++) {
                                 const tempoutgoing = madeoutgoing;
                                 tempoutgoing.attachments = [madeoutgoing.attachments[index]];
                                 tempoutgoing.channelData.attachments = [madeoutgoing.attachments[index]];

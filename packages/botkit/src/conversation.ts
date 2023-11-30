@@ -835,7 +835,7 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
                         && madeoutgoing.attachments[0].contentType
                         && madeoutgoing.attachments[0].contentType === 'image/jpg') {
                             
-                            for (let index = 0; index < madeoutgoing.attachments.length() ; index++) {
+                            for (let index = 0; index < madeoutgoing.attachments.length ; index++) {
                                 const tempoutgoing = madeoutgoing;
                                 tempoutgoing.attachments = [madeoutgoing.attachments[index]];
                                 tempoutgoing.channelData.attachments = [madeoutgoing.attachments[index]];
