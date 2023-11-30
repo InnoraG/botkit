@@ -55,23 +55,27 @@ export class FacebookAPI {
 
         if (method.toUpperCase() === 'GET') {
             for (const key in payload) {
-                queryString = queryString + `${ encodeURIComponent(key) }=${ encodeURIComponent(payload[key]) }&`;
+                queryString = queryString + `${encodeURIComponent(key)}=${encodeURIComponent(payload[key])}&`;
             }
         } else {
             body = payload;
         }
 
         const fetchResponse = await fetch(
-            `https://${ this.api_host }/${ this.api_version }${ path }${ queryString }access_token=${ this.token }&appsecret_proof=${ proof }`,
+            `https://${this.api_host}/${this.api_version}${path}${queryString}access_token=${this.token}&appsecret_proof=${proof}`,
             {
                 method: method.toUpperCase(),
+                headers: {
+                    "Content-Type": "application/json",
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
                 body: JSON.stringify(body)
             }
         );
 
         const responseData = await fetchResponse.text();
         if (!fetchResponse.ok) {
-            throw new Error(`Request failed with status ${ fetchResponse.status }: ${ responseData }`);
+            throw new Error(`Request failed with status ${fetchResponse.status}: ${responseData}`);
         }
 
         try {

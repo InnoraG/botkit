@@ -66,6 +66,10 @@ class FacebookAPI {
             }
             const fetchResponse = yield (0, cross_fetch_1.default)(`https://${this.api_host}/${this.api_version}${path}${queryString}access_token=${this.token}&appsecret_proof=${proof}`, {
                 method: method.toUpperCase(),
+                headers: {
+                    "Content-Type": "application/json",
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
                 body: JSON.stringify(body)
             });
             const responseData = yield fetchResponse.text();
