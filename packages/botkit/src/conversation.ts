@@ -598,8 +598,8 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
      */
     private async onStep(dc, step): Promise<any> {
         // InnoraG : Let's merge named regex into vars
-        if (step.values.message && step.values.message.matches && step.values.message.matches.groups) { 
-            Object.assign(step.values,step.values.message.matches.groups);
+        if (step.values.message && step.values.message.matches && step.values.message.matches.groups) {
+            Object.assign(step.values, step.values.message.matches.groups);
         }
 
         // Let's interpret the current line of the script.
@@ -830,20 +830,23 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
                         }
                     } else if (step.values.channelName
                         && step.values.channelName === 'facebook'
-                        && Array.isArray(madeoutgoing.attachments)
-                        && Array.isArray(madeoutgoing.channelData.attachments)
-                        && madeoutgoing.attachments[0].contentType
-                        && madeoutgoing.attachments[0].contentType === 'image/jpg') {
-                            
-                            for (let index = 0; index < madeoutgoing.attachments.length ; index++) {
-                                const tempoutgoing = madeoutgoing;
-                                tempoutgoing.attachments = [madeoutgoing.attachments[index]];
-                                tempoutgoing.channelData.attachments = [madeoutgoing.attachments[index]];
-                                // delete tempoutgoing.text;
-                                await dc.context.sendActivity(tempoutgoing);
+                        && madeoutgoing.channelData.attachment
+                        && madeoutgoing.channelData.attachment.type === 'image'
+                        && Array.isArray(madeoutgoing.channelData.attachment.payload)
+                    ) {
+                        for (let index = 0; index < madeoutgoing.channelData.attachment.payload.length; index++) {
+                            const tempoutgoing = madeoutgoing;
+                            tempoutgoing.channelData.attachment.payload = madeoutgoing.channelData.attachment.payload[index];
+                            if (madeoutgoing.channelData.attachments && Array.isArray(madeoutgoing.channelData.attachments)) {
+                                tempoutgoing.channelData.attachments = madeoutgoing.channelData.attachments[index]
                             }
-
-                   } else{
+                            if (madeoutgoing.attachments && Array.isArray(madeoutgoing.attachments)) {
+                                tempoutgoing.attachments = madeoutgoing.attachments[index]
+                            }
+                            // delete tempoutgoing.text;
+                            await dc.context.sendActivity(tempoutgoing);
+                        }
+                    } else {
                         // sendActivity as usual
                         await dc.context.sendActivity(madeoutgoing);
                     }

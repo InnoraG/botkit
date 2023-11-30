@@ -695,14 +695,18 @@ class BotkitConversation extends botbuilder_dialogs_1.Dialog {
                         }
                         else if (step.values.channelName
                             && step.values.channelName === 'facebook'
-                            && Array.isArray(madeoutgoing.attachments)
-                            && Array.isArray(madeoutgoing.channelData.attachments)
-                            && madeoutgoing.attachments[0].contentType
-                            && madeoutgoing.attachments[0].contentType === 'image/jpg') {
-                            for (let index = 0; index < madeoutgoing.attachments.length; index++) {
+                            && madeoutgoing.channelData.attachment
+                            && madeoutgoing.channelData.attachment.type === 'image'
+                            && Array.isArray(madeoutgoing.channelData.attachment.payload)) {
+                            for (let index = 0; index < madeoutgoing.channelData.attachment.payload.length; index++) {
                                 const tempoutgoing = madeoutgoing;
-                                tempoutgoing.attachments = [madeoutgoing.attachments[index]];
-                                tempoutgoing.channelData.attachments = [madeoutgoing.attachments[index]];
+                                tempoutgoing.channelData.attachment.payload = madeoutgoing.channelData.attachment.payload[index];
+                                if (madeoutgoing.channelData.attachments && Array.isArray(madeoutgoing.channelData.attachments)) {
+                                    tempoutgoing.channelData.attachments = madeoutgoing.channelData.attachments[index];
+                                }
+                                if (madeoutgoing.attachments && Array.isArray(madeoutgoing.attachments)) {
+                                    tempoutgoing.attachments = madeoutgoing.attachments[index];
+                                }
                                 // delete tempoutgoing.text;
                                 yield dc.context.sendActivity(tempoutgoing);
                             }
