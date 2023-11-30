@@ -147,7 +147,7 @@ class BotWorker {
     beginDialog(id, options) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this._config.dialogContext) {
-                yield this._config.dialogContext.beginDialog(id + ':botkit-wrapper', Object.assign({ user: this.getConfig('context').activity.from.id, channel: this.getConfig('context').activity.conversation.id }, options));
+                yield this._config.dialogContext.beginDialog(id + ':botkit-wrapper', Object.assign({ user: this.getConfig('context').activity.from.id, channel: this.getConfig('context').activity.conversation.id, channelName: this.getConfig('context').activity.channelId }, options));
                 // make sure we save the state change caused by the dialog.
                 // this may also get saved again at end of turn
                 yield this._controller.saveState(this);
@@ -207,7 +207,7 @@ class BotWorker {
     replaceDialog(id, options) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this._config.dialogContext) {
-                yield this._config.dialogContext.replaceDialog(id + ':botkit-wrapper', Object.assign({ user: this.getConfig('context').activity.from.id, channel: this.getConfig('context').activity.conversation.id }, options));
+                yield this._config.dialogContext.replaceDialog(id + ':botkit-wrapper', Object.assign({ user: this.getConfig('context').activity.from.id, channel: this.getConfig('context').activity.conversation.id, channelName: this.getConfig('context').activity.channelId }, options));
                 // make sure we save the state change caused by the dialog.
                 // this may also get saved again at end of turn
                 yield this._controller.saveState(this);

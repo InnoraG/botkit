@@ -155,6 +155,7 @@ export class BotWorker {
             await this._config.dialogContext.beginDialog(id + ':botkit-wrapper', {
                 user: this.getConfig('context').activity.from.id,
                 channel: this.getConfig('context').activity.conversation.id,
+                channelName: this.getConfig('context').activity.channelId,
                 ...options
             });
 
@@ -220,6 +221,7 @@ export class BotWorker {
             await this._config.dialogContext.replaceDialog(id + ':botkit-wrapper', {
                 user: this.getConfig('context').activity.from.id,
                 channel: this.getConfig('context').activity.conversation.id,
+                channelName: this.getConfig('context').activity.channelId,
                 ...options
             });
 

@@ -662,7 +662,7 @@ class BotkitConversation extends botbuilder_dialogs_1.Dialog {
                                 const choiceArrayFlat = choiceArray.flat();
                                 //const choicePromptOptions = ChoiceFactory.forChannel(dc.context, choiceArray, madeoutgoing.text);
                                 const promptOptions = {
-                                    prompt: 'Merci de faire votre choix :', //madeoutgoing.text,
+                                    prompt: 'Merci de faire votre choix :',
                                     choices: botbuilder_dialogs_1.ChoiceFactory.toChoices(choiceArrayFlat),
                                     style: botbuilder_dialogs_1.ListStyle.list
                                     // You can also include a retry prompt if you like,
@@ -691,6 +691,20 @@ class BotkitConversation extends botbuilder_dialogs_1.Dialog {
                                     madeoutgoingCopy.attachments = madeoutgoing.attachments.slice(turn * row, turn * row + row);
                                     yield dc.context.sendActivity(madeoutgoingCopy);
                                 }
+                            }
+                        }
+                        else if (step.values.channelName
+                            && step.values.channelName === 'facebook'
+                            && Array.isArray(madeoutgoing.attachments)
+                            && Array.isArray(madeoutgoing.channelData.attachments)
+                            && madeoutgoing.attachments[0].contentType
+                            && madeoutgoing.attachments[0].contentType === 'image/jpg') {
+                            for (let index = 0; index < madeoutgoing.attachments.length(); index++) {
+                                const tempoutgoing = madeoutgoing;
+                                tempoutgoing.attachments = [madeoutgoing.attachments[index]];
+                                tempoutgoing.channelData.attachments = [madeoutgoing.attachments[index]];
+                                // delete tempoutgoing.text;
+                                yield dc.context.sendActivity(tempoutgoing);
                             }
                         }
                         else {

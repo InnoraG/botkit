@@ -828,7 +828,22 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
                                 await dc.context.sendActivity(madeoutgoingCopy);
                             }
                         }
-                    } else {
+                    } else if (step.values.channelName
+                        && step.values.channelName === 'facebook'
+                        && Array.isArray(madeoutgoing.attachments)
+                        && Array.isArray(madeoutgoing.channelData.attachments)
+                        && madeoutgoing.attachments[0].contentType
+                        && madeoutgoing.attachments[0].contentType === 'image/jpg') {
+                            
+                            for (let index = 0; index < madeoutgoing.attachments.length() ; index++) {
+                                const tempoutgoing = madeoutgoing;
+                                tempoutgoing.attachments = [madeoutgoing.attachments[index]];
+                                tempoutgoing.channelData.attachments = [madeoutgoing.attachments[index]];
+                                // delete tempoutgoing.text;
+                                await dc.context.sendActivity(tempoutgoing);
+                            }
+
+                   } else{
                         // sendActivity as usual
                         await dc.context.sendActivity(madeoutgoing);
                     }
