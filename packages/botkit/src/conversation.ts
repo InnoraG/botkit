@@ -831,17 +831,18 @@ export class BotkitConversation<O extends object = {}> extends Dialog<O> {
                     } else if (step.values.channelName
                         && step.values.channelName === 'facebook'
                         && madeoutgoing.channelData.attachment
-                        && madeoutgoing.channelData.attachment.type === 'image'
-                        && Array.isArray(madeoutgoing.channelData.attachment.payload)
+                        && Array.isArray(madeoutgoing.channelData.attachment)
+                        && madeoutgoing.channelData.attachment[0].type
+                        && madeoutgoing.channelData.attachment[0].payload
                     ) {
-                        for (let index = 0; index < madeoutgoing.channelData.attachment.payload.length; index++) {
-                            const tempoutgoing = madeoutgoing;
-                            tempoutgoing.channelData.attachment.payload = madeoutgoing.channelData.attachment.payload[index];
+                        for (let index = 0; index < madeoutgoing.channelData.attachment.length; index++) {
+                            const tempoutgoing = JSON.parse(JSON.stringify(madeoutgoing));
+                            tempoutgoing.channelData.attachment = JSON.parse(JSON.stringify(madeoutgoing.channelData.attachment[index]));
                             if (madeoutgoing.channelData.attachments && Array.isArray(madeoutgoing.channelData.attachments)) {
-                                tempoutgoing.channelData.attachments = madeoutgoing.channelData.attachments[index]
+                                tempoutgoing.channelData.attachments = JSON.parse(JSON.stringify(madeoutgoing.channelData.attachments[index]))
                             }
                             if (madeoutgoing.attachments && Array.isArray(madeoutgoing.attachments)) {
-                                tempoutgoing.attachments = madeoutgoing.attachments[index]
+                                tempoutgoing.attachments = JSON.parse(JSON.stringify(madeoutgoing.attachments[index]))
                             }
                             // delete tempoutgoing.text;
                             await dc.context.sendActivity(tempoutgoing);
